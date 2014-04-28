@@ -1,2 +1,5 @@
 automatonSim
 ============
+
+
+##README!!!!!!  
