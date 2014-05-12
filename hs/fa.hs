@@ -1,16 +1,50 @@
-import Control.Monad.State
+import Data.Maybe
+import Control.Applicative
+import Debug.Trace
 
-type Stack = [Int]
-stackMainp :: State Stack Int
-stackMainp = do
-  push 3 
-  a <- pop
-  pop
+type Rule = (Char, [Char], Char)
 
-pop :: State Stack Int
-pop = state $ \(x:xs) -> (x,xs)
+process :: [Rule] -> Char -> [Char] ->[Char] -> Bool
+process rules currentState finalStates input =
+  if input == "" then
+    isAccept finalStates currentState  
+  else
+    let 
+      maybeRes = eat rules currentState input 
+      res = [fromJust (x) | x <- maybeRes, not $ x == Nothing] 
+      eat' = (\r -> \t -> \c -> eat r c t)  rules (tail input)
+    in 
+      if length res> 1 then
+        let 
+          ret = (map  eat' res) 
+        in
+          False
 
-push :: Int -> State Stack ()
-push a = state $ \xs -> ((), a:xs)
+      else if length res == 0 then
+        False
+      else
+        True
+
+          
+      
+      
 
 
+eat :: [Rule] -> Char -> [Char] -> [Maybe Char]
+eat rules currentState target =
+  let
+    moveRules = (\input -> \rs -> move rs input) $ head target 
+    matchRules = [rule|rule@(c,_,_) <- rules,c == currentState] 
+  in map moveRules matchRules 
+
+move :: Rule -> Char-> Maybe Char
+move (currentState,stateSet,nextState) input = 
+  if isAccept stateSet input then
+    Just(nextState)
+  else 
+    Nothing 
+  
+isAccept :: [Char] -> Char -> Bool
+isAccept (x:xs) input = 
+  if x == input then True else isAccept xs input
+isAccept [] input = False
