@@ -1,34 +1,42 @@
 import Data.Maybe
 import Control.Applicative
+import Control.Monad.State
 import Debug.Trace
 
 type Rule = (Char, [Char], Char)
+type FA = ([Rule],Char,[Char]) 
 
-process :: [Rule] -> Char -> [Char] ->[Char] -> Bool
-process rules currentState finalStates input =
+m1 = ([('A',"a",'B'),('A',"bwad",'A'),('B',"b",'A')] ,'A', "B")
+
+process :: FA ->[Char] -> Bool
+process fa@(rules, currentState, finalStates) input =
   if input == "" then
-    isAccept finalStates currentState  
+    trace "input nil "  (isAccept finalStates currentState)
   else
     let 
-      maybeRes = eat rules currentState input 
-      res = [fromJust (x) | x <- maybeRes, not $ x == Nothing] 
-      eat' = (\r -> \t -> \c -> eat r c t)  rules (tail input)
+      res = remove_Nothing $ eat rules currentState input 
     in 
       if length res> 1 then
         let 
-          ret = (map  eat' res) 
+          nextStates = map (newStateFA fa) res
+          nextInput = tail input
+          results = map ((\str -> \fa-> process fa str) nextInput) nextStates
         in
-          False
+          foldl (||) False results
 
-      else if length res == 0 then
-        False
       else
-        True
+         trace "length : 0 " False
 
-          
-      
-      
+newStateFA :: FA -> Char -> FA
+newStateFA fa st = 
+  let 
+    (rules,currentState,finalStates) = fa
+  in
+    (rules,st,finalStates)
 
+remove_Nothing:: [Maybe Char] -> [Char] 
+remove_Nothing lst =  
+  trace ("MaybeRes : "++show(lst)) ([fromJust x | x <- lst , not ( x == Nothing)])
 
 eat :: [Rule] -> Char -> [Char] -> [Maybe Char]
 eat rules currentState target =
@@ -48,3 +56,26 @@ isAccept :: [Char] -> Char -> Bool
 isAccept (x:xs) input = 
   if x == input then True else isAccept xs input
 isAccept [] input = False
+
+{-
+
+mainFA ::  State FA ()
+mainFA = do
+  xs <- get
+  put $ trace (show(xs)) xs
+  c <- getState
+  setState 'D'
+  
+
+getState :: State FA Char
+getState = do
+  (_,current,_) <- get
+  return current
+
+setState :: Char -> State FA ()
+setState cur = do
+  (a,current,finalState) <- get
+  put $ trace ("rules: "++show a) (a,cur,finalState)
+-}  
+
+
