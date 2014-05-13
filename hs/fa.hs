@@ -14,18 +14,11 @@ process fa@(rules, currentState, finalStates) input =
     trace "input nil "  (isAccept finalStates currentState)
   else
     let 
-      res = remove_Nothing $ eat rules currentState input 
-    in 
-      if length res> 1 then
-        let 
-          nextStates = map (newStateFA fa) res
-          nextInput = tail input
-          results = map ((\str -> \fa-> process fa str) nextInput) nextStates
-        in
-          foldl (||) False results
-
-      else
-         trace "length : 0 " False
+      nextStates = map (newStateFA fa) $ remove_Nothing $ eat rules currentState input 
+      nextInput = tail input
+      results = map ((\str -> \fa-> process fa str) nextInput) nextStates
+    in
+      foldl (||) False results
 
 newStateFA :: FA -> Char -> FA
 newStateFA fa st = 
