@@ -23,7 +23,7 @@ function _eat(t){
  console.log("Eat "+t+"  current state: ",this.currentState);
   if(this.transitionTable.hasOwnProperty(this.currentState)){
     if(this.transitionTable[this.currentState].hasOwnProperty(t)){
-      console.log("nextState : ",this.transitionTable[this.currentState][t]);
+//      console.log("nextState : ",this.transitionTable[this.currentState][t]);
       return this.transitionTable[this.currentState][t];
     }
     console.log("No next state. currentState: ",this.currentState," , Input Symbol : ",t);

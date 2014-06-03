@@ -19,7 +19,7 @@ FA.prototype = {
   },
   show:function(){
     for(i in this.states){
-      var stateElem = new DrawableState(this.states[i],i*150,200);
+      var stateElem = new DrawableState(this.states[i],i*150,200+i*30);
       stateElem.draw();
       this.elems.push(stateElem);
     }
@@ -28,10 +28,11 @@ FA.prototype = {
     for(cs in this.transitionTable){
       var csElem = this.getElemByStateName(cs);
 //      console.log(csElem.stateName,csElem.x,csElem.y);
-      for(j in this.transitionTable[cs]){
+      for(j in this.transitionTable[cs]){   
         var ns = this.transitionTable[cs][j];
+        if(cs == ns)break;
         var nsElem = this.getElemByStateName(ns);
-        drawPath(csElem,nsElem);
+        drawPath(csElem,nsElem,j);
       }
     }
 
