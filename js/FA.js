@@ -2,8 +2,11 @@ function FA() {
  
 }
 
-FA.pe = {
-  state:[],
-  rule:{},
-  
+FA.prototype = {
+  states:[],
+  currentState:"",
+  finalState:{},
+  movingFunction:{
+
+  },
 }
