@@ -2,6 +2,7 @@ function init(args) {
   this.states = args[0];
   this.symbols = args[1];
   this.currentState = args[2];
+  this.initState= args[2];
   this.finalState = args[3];
 }
 
